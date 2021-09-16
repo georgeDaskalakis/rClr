@@ -29,7 +29,7 @@ static const char* options[] = {
     };
 
 #ifdef MONO_INST
-#include <mono/jit/jit.h> 
+#include <C:/Program Files/Mono/include/mono-2.0/mono/jit/jit.h> 
 #include <glib.h>  // to get typedef gpointer
 // If building against the distributed mono, the following struct declaration is needed. 
 // Cannot find it in the header files included.
@@ -39,17 +39,17 @@ struct _MonoReflectionType {
 	MonoType  *type;
 };
 #else
-#include <mono/mini/jit.h> // if using mono built with VS from source
-#include <mono/metadata/object-internals.h>
+#include <C:/Program Files/Mono/include/mono-2.0/mono/mini/jit.h> // if using mono built with VS from source
+#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/object-internals.h>
 #endif
 
-#include <mono/metadata/mono-debug.h>
-#include <mono/metadata/object.h>
-#include <mono/metadata/reflection.h>
-#include <mono/metadata/environment.h>
-#include <mono/metadata/assembly.h>
-#include <mono/metadata/debug-helpers.h>
-#include <mono/metadata/class.h>
+#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/mono-debug.h>
+#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/object.h>
+#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/reflection.h>
+#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/environment.h>
+#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/assembly.h>
+#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/debug-helpers.h>
+#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/class.h>
 //#include <mono/metadata/object-internals.h>
 
 typedef MonoObject CLR_OBJ;

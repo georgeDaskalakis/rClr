@@ -1,0 +1,16 @@
+REM IMPORTANT to not have nuget.exe or other commands under c:\bin; RTools mingw cannot find these commands
+set PATH=C:\cmd_bin;%PATH%
+set SRC_ROOT=C:\Users\GeorgiosDaskalakis\Documents\GitHub
+
+cd %SRC_ROOT%
+
+set PKG_VERSION=0.9.1
+
+set R_EXE=""C:\Program Files\R\R-4.0.1\bin\R.exe""
+set R_VANILLA=%R_EXE% --no-save --no-restore-data
+%R_VANILLA% CMD build rClr
+set R_REPO_DIR=c:\build\software\R_pkgs\
+set R_WINBIN_REPO_DIR=%R_REPO_DIR%bin\windows\contrib\3.5\
+if not exist %R_WINBIN_REPO_DIR% mkdir %R_WINBIN_REPO_DIR%
+cd %R_WINBIN_REPO_DIR%
+%R_VANILLA% CMD INSTALL --build %SRC_ROOT%\rClr_%PKG_VERSION%.tar.gz

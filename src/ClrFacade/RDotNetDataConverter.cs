@@ -31,8 +31,8 @@ namespace Rclr
                     dllName = Path.Combine(libDir, "rClr.so");
                 else
                 {
-                    dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386", 
-                        (isMonoRuntime() ? "rClrMono.dll" : "rClrMs.dll")
+                    dllName = Path.Combine(libDir, Environment.Is64BitProcess ? "x64" : "i386",
+                        ("rClrMs.dll")
                     );
                 }
             }
@@ -154,11 +154,6 @@ namespace Rclr
             converterFunctions.Add(typeof(DateTime[]), ConvertArrayDateTime);
             converterFunctions.Add(typeof(TimeSpan[]), ConvertArrayTimeSpan);
             converterFunctions.Add(typeof(Complex[]), ConvertArrayComplex);
-        }
-
-        private bool isMonoRuntime()
-        {
-            return ClrFacade.IsMonoRuntime;
         }
 
         public void Error(string msg)

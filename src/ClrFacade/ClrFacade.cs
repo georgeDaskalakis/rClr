@@ -196,14 +196,6 @@ namespace Rclr
             return result;
         }
 
-        /// <summary>
-        /// Invokes a static method given the name of a type. Unique name to facilitate binding with Mono.
-        /// </summary>
-        public static object CallStaticMethodMono(string typename, string methodName, object[] arguments)
-        {
-             return CallStaticMethod(typename, methodName, arguments);
-        }
-
         private static bool LogThroughR(Exception ex)
         {
             // Initially just wanted to print to R as below. HOWEVER

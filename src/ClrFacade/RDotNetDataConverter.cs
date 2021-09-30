@@ -42,9 +42,7 @@ namespace Rclr
             SetupREngine ();
             // The Mono API already has some unhandled exception reporting. 
             // TODO Use the following if it works well for both CLRuntimes.
-#if !MONO
-            // OBSOLETE? SetupExceptionHandling();
-#endif
+
             converterFunctions = new Dictionary<Type, Func<object, SymbolicExpression>>();
 
             ConvertVectors = true;

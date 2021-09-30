@@ -384,7 +384,6 @@ SEXP r_call_method(SEXP par) {
 	return clr_obj_ms_convert_to_SEXP(result);
 }
 
-#ifdef MS_CLR
 SEXP rclr_ms_get_type_name(SEXP clrObj) {
 	CLR_OBJ * objptr = get_clr_object(clrObj);
 	return make_char_single_sexp(get_type_full_name(objptr));
@@ -639,8 +638,6 @@ SEXP clr_obj_ms_convert_to_SEXP(CLR_OBJ &obj) {
 //case VT_RESERVED:
 //case VT_ILLEGAL:
 
-#endif
-
 void get_FullTypeName( SEXP p, char ** tname) {
 	SEXP e;
 	e=CAR(p); /* second is the namespace */
@@ -806,12 +803,7 @@ HRESULT rclr_ms_create_clr_complex_direct(VARIANT * vtResult)
 CLR_OBJ * rclr_convert_element_rdotnet(SEXP el)
 {
 	// The idea here is that we create a SymbolicExpression in C#, that the C# code will intercept
-#if MS_CLR
 	return rclr_ms_convert_element_rdotnet(el);
-#else
-    return rclr_mono_convert_element_rdotnet(el);
-    // error("%s", "Failure in rclr_convert_element_rdotnet: nor implemented yet on Mono");
-#endif
 }
 
 CLR_OBJ * rclr_convert_element( SEXP el ) 
@@ -870,9 +862,8 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 				return NULL;
 			}
 		}
-#if MS_CLR
 		vtype = (is_date || is_POSIXct) ?  VT_DATE : VT_R8;
-#endif
+
 		if( lengthArg == 1)
 		{
 			dval = is_date ? DateRToCOMdatetime(values[0]) : (is_POSIXct ? PosixCtToCOMdatetime(values[0]) : values[0] );
@@ -959,10 +950,8 @@ CLR_OBJ * rclr_convert_element( SEXP el )
 			{
 				stringArray[j] = (char*)Rf_translateCharUTF8(STRING_ELT(el, j));
 			}
-#ifdef MS_CLR
 			SAFEARRAY * safeArray = create_array_strings(stringArray, LENGTH(el));
 			result = rclr_ms_create_vt_array(safeArray, VT_ARRAY | VT_BSTR);
-#endif
 			free(stringArray);
 		}
 		break;

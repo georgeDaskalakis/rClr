@@ -3,58 +3,12 @@
 
 // #define RCLR_VER 0x000100 /* RCLR v0.1-0 */
 
-#ifndef MS_CLR
-#ifndef MONO_CLR
-#define MS_CLR 1
-#endif
-#endif
-
 
 /////////////////////////////////////////
 // Imports and includes
 /////////////////////////////////////////
 
-
-#ifdef MONO_CLR
-// define these to keep using booleans with MS CPP. Feels kludgy, but so long.
-#define TRUE_BOOL 1;
-#define FALSE_BOOL 0;
-
-typedef int RCLR_BOOL;
-
-// stuff to have the mono debugger available. Hopefully.
-static const char* options[] = {
-      "--soft-breakpoints",
-      "--debugger-agent=transport=dt_socket,address=127.0.0.1:10000"
-    };
-
-#ifdef MONO_INST
-#include <C:/Program Files/Mono/include/mono-2.0/mono/jit/jit.h> 
-#include <glib.h>  // to get typedef gpointer
-// If building against the distributed mono, the following struct declaration is needed. 
-// Cannot find it in the header files included.
-/* This corresponds to System.Type */
-struct _MonoReflectionType {
-	MonoObject object;
-	MonoType  *type;
-};
-#else
-#include <C:/Program Files/Mono/include/mono-2.0/mono/mini/jit.h> // if using mono built with VS from source
-#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/object-internals.h>
-#endif
-
-#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/mono-debug.h>
-#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/object.h>
-#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/reflection.h>
-#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/environment.h>
-#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/assembly.h>
-#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/debug-helpers.h>
-#include <C:/Program Files/Mono/include/mono-2.0/mono/metadata/class.h>
-//#include <mono/metadata/object-internals.h>
-
-typedef MonoObject CLR_OBJ;
-
-#elif MS_CLR
+#if MS_CLR
 
 #include <windows.h>
 #include <fstream>
@@ -139,17 +93,7 @@ extern "C" {
 	 * \return	a SEXP representing the object handled by the CLR conversion facade, if any.
 	 */
 	SEXP r_get_object_direct();
-#ifdef MONO_CLR
-	void ** build_method_parameters(SEXP largs);
-	SEXP rclr_mono_reflect_object(CLR_OBJ * obj);
-	SEXP rclr_mono_get_type_name(SEXP clrObj);
-	SEXP rclr_mono_diagnose_method_parameters(SEXP methodParams);
-	SEXP rclr_mono_call_static_method(char * ns_qualified_typename, const char *mnam, SEXP methodParams);
-	SEXP rclr_mono_call_method(const char *mnam, CLR_OBJ * obj, SEXP methodParams);
-	SEXP clr_obj_mono_convert_to_SEXP( CLR_OBJ * pobj);
-#elif MS_CLR
 	VARIANT ** build_method_parameters(SEXP largs);
-#endif
     SEXP clr_object_to_SEXP(CLR_OBJ *o);
 	void get_ns_and_type( SEXP p, char ** name_space, char ** type_short_name );
 	void get_FullTypeName( SEXP p, char ** tname);
@@ -162,14 +106,6 @@ extern "C" {
 
 #ifdef __cplusplus
 } // end of extern "C" block
-#endif
-
-
-#ifdef MONO_CLR
-
-SEXP rclr_mono_call_method_with_exception(const char * mnam, CLR_OBJ * obj, MonoClass * klass, SEXP p, CLR_OBJ * exception);
-void rclr_mono_load_assembly( char ** filename );
-
 #endif
 
 CLR_OBJ * rclr_convert_element( SEXP el );
@@ -274,47 +210,6 @@ inline double linear_to_oleautdate(double linear_date) {
 // Mono/MS.NET specific implementation, not dependend on R constructs
 /////////////////////////////////////////
 
-
-#ifdef MONO_CLR
-
-// Using v4.0.30319 which is the runtime info for the version 4.5 of the CLR.
-// This may be required even if the assemblies are compiled to target the 4.0 runtime.
-// Problem arise if 'forcing' the 4.0 runtime if there are extension methods in use.
-// See http://r2clr.codeplex.com/workitem/26 and http://lists.ximian.com/pipermail/mono-devel-list/2013-January/040009.html
-#define RCLR_DEFAULT_RUNTIME_VERSION "v4.0.30319"
-#define INIT_CLR_FROM_FILE FALSE
-MonoDomain *domain = NULL;
-MonoAssembly *assembly;
-MonoImage *image;
-MonoClass * spTypeClrFacade = NULL;
-
-// A vector to store transient CLR object handles that we need to clear on leaving the native interop layer.
-std::vector<CLR_OBJ*> transientArgs;
-
-MonoDomain * get_domain();
-MonoAssembly * get_assembly();
-MonoImage * get_image();
-
-void rclr_mono_create_domain( char* filename, int mono_debug);
-CLR_OBJ * create_object (MonoDomain *domain, MonoImage *image, char * name_space, char * type_short_name);
-MonoString * create_mono_string(char * str);
-MonoObject * create_mono_double(double * val_ptr);
-MonoObject * create_mono_intptr(size_t * val_ptr);
-MonoArray * create_array_double( double * values, int length );
-MonoArray * create_array_object( void ** values, int length );
-double * create_array_double_from_monoarray( MonoArray* monoarray );
-
-CLR_OBJ * get_property_value( CLR_OBJ * obj, const char * property_name );
-void print_exception( CLR_OBJ * exception, char * property_name);
-void print_if_exception( CLR_OBJ * exception );
-CLR_OBJ * rclr_mono_invoke_method_stringarg( MonoMethod * method, char * meth_arg);
-CLR_OBJ * rclr_mono_call_static_method_tname(char * ns_qualified_typename, char * mnam, void ** params, int paramCount);
-CLR_OBJ * rclr_mono_call_static_method_tname_directcall(char * ns_qualified_typename, char * mnam, void ** params, int paramCount);
-CLR_OBJ * rclr_mono_call_inst_method(const char *mnam, CLR_OBJ * obj, void ** params, int param_count );
-double * clr_datetime_obj_to_r_date_numeric(CLR_OBJ * pobj);
-
-#elif MS_CLR
-
 ICLRMetaHost *pMetaHost = NULL;
 ICLRRuntimeInfo *pRuntimeInfo = NULL;
 ICLRRuntimeHost *pClrRuntimeHost = NULL;
@@ -377,8 +272,5 @@ VARIANT * rclr_ms_create_vt_array(SAFEARRAY * safeArray, VARTYPE vartype);
 void free_variant_array(VARIANT ** a, int size);
 void release_transient_objects();
 void rclr_ms_fill_array_from_index_two(SAFEARRAY * psaStaticMethodArgs, VARIANT ** params, int paramsArgLength);
-
-#endif
-
 
 #endif

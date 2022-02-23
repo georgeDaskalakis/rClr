@@ -125,16 +125,6 @@ then
 fi
 
 # echo "Passed detection of VS_COMNTOOLS"
-
-if [ $USE_GCC = 1 ]
-then
-	subst_1="s|@MONO_INSTALL_PATH@|$MONO_INSTALL_PATH|g"
-	subst_2="s|@MONO_INSTALL_PATH64@|$MONO_INSTALL_PATH64|g"
-	sed -e "$subst_1" -e "$subst_2" $MAKEVARS_INFILE > $MAKEVARS_FILE
-	echo "Created $MAKEVARS_FILE"
-	exit 0
-fi
-
 	
 ## Detect if a sufficient toolchain is present to compile with visual studio
 
